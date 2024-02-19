@@ -1,130 +1,139 @@
-main .form {
-  background-color: var(--color-white);
-  padding: var(--spacing-s);
-  border-radius: var(--card-border-radius-l);
-  filter: var(--image-filter-drop-shadow-small);
-  border: solid 1px var(--bg-color-grey);
+.form .field-wrapper {
+  display: grid;
+  grid-auto-flow: row;
+  align-items: center;
+  padding: 8px;
 }
 
-main .form h2 {
-  padding: var(--spacing-s) 0;
-  font-size: var(--type-heading-l-lh);
+.form fieldset {
+  display: grid;
+  grid-auto-flow: row;
+  gap: 8px;
+  border: none;
+  padding: 0;
 }
 
-main .form h3 {
-  padding-top: var(--spacing-s);
-  font-size: var(--type-heading-m-size);
+@media (min-width: 900px) {
+  .form fieldset {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
 }
 
-main .form input,
-main .form textarea,
-main .form select {
-  border: solid 1px var(--bg-color-grey);
-  padding: var(--spacing-xxs) var(--spacing-xs);
+.form fieldset > legend {
+  font-weight: 700;
+  font-size: var(--heading-font-size-xs);
+}
+
+.form label {
+  font-weight: 700;
+  font-size: var(--body-font-size-xs);
+  margin-bottom: 0.25em;
+}
+
+.form input,
+.form select,
+.form textarea {
+  font-size: var(--body-font-size-s);
   width: 100%;
   max-width: 50rem;
-  box-sizing: border-box;
-  border-radius: var(--input-border-radius);
-  font-size: var(--type-body-s-size);
-  line-height: var(--type-body-s-lh);
-  font-family: var(--body-font-family);
-}
-
-main .form textarea {
-  min-height: 100px;
-}
-
-main .form input:hover,
-main .form select:hover {
-  border-color: var(--color-font-grey);
-}
-
-main .form label {
   display: block;
-  padding-bottom: var(--spacing-xxs);
+  padding: 12px 8px;
+  border-radius: 4px;
   box-sizing: border-box;
-  font-size: var(--type-body-s-size);
-  line-height: var(--type-body-s-lh);
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+  background-color: var(--background-color);
 }
 
-main .form label.required::after {
+.form textarea {
+  resize: vertical;
+}
+
+.form .selection-wrapper input {
+  width: 16px;
+}
+
+.form .selection-wrapper label {
+  margin-bottom: 0;
+}
+
+.form input:hover {
+  border: 1px solid var(--text-color);
+}
+
+.form .button {
+  max-width: 225px;
+  font-size: var(--body-font-size-m);
+  padding: 0.2em 0.4em;
+}
+
+.form .field-wrapper.selection-wrapper {
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: 16px;
+}
+
+.form .field-wrapper > label {
+  order: -1;
+}
+
+.form .field-wrapper.selection-wrapper > label {
+  order: 1;
+}
+
+.form input[required] + label::after {
   content: "*";
-  color: var(--color-black);
-  padding-left: var(--spacing-xxxs);
+  color: firebrick;
+  margin-inline-start: 1ch;
 }
 
-main .form .field-wrapper {
-  margin-bottom: var(--spacing-m);
-}
-
-main .form .form-checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  margin: var(--spacing-xs) 0;
-}
-
-main .form .form-checkbox-wrapper input[type='checkbox'] {
-  appearance: none;
-
-  /* stylelint-disable */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  /* stylelint-enable */
-  height: 20px;
-  width: 20px;
+.form .toggle-wrapper .switch {
   position: relative;
-  border: unset;
-  padding: unset;
-  margin-right: var(--spacing-xxs);
-  margin-left: 0;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
 }
 
-main .form .form-checkbox-wrapper input[type='checkbox']::after {
-  display: block;
+.form .toggle-wrapper input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.form .toggle-wrapper .slider {
   position: absolute;
+  cursor: pointer;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--dark-color);
+  transition: 0.4s;
+  border-radius: 30px;
+}
+
+.form .toggle-wrapper .slider::before {
+  position: absolute;
+  content: "";
   height: 20px;
   width: 20px;
-  content: ' ';
-  background: url('./checkbox.svg');
-  background-size: contain;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--background-color);
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
-main .form .form-checkbox-wrapper input[type='checkbox']:checked::after {
-  background: url('./checkbox-checked.svg');
-  background-size: contain;
-  content: ' ';
+.form .toggle-wrapper input:checked + .slider {
+  background-color: var(--link-color);
 }
 
-main .form .form-checkbox-wrapper label {
-  display: block;
-  font-size: var(--type-body-xxs-size);
-  line-height: var(--type-body-xxs-lh);
-  padding-bottom: 0;
+.form .toggle-wrapper input:focus + .slider {
+  outline: 2px solid var(--link-color);
+  outline-offset: 2px;
 }
 
-main .form-legal-wrapper p {
-  font-size: var(--type-body-xxs-size);
-  line-height: var(--type-body-xxs-lh);
-  font-style: italic;
-}
-
-main .form button {
-  font-family: var(--body-font-family);
-}
-
-@media screen and (min-width: 900px) {
-  main .form {
-    padding: var(--spacing-ml);
-  }
-  
-  main .form .field-wrapper {
-    display: flex;
-  }
-
-  main .form label {
-    width: 72%;
-  }
+.form .toggle-wrapper input:checked + .slider::before {
+  transform: translateX(24px);
 }
