@@ -1,23 +1,26 @@
+.form .field-wrapper.hidden,
+.form fieldset.hidden {
+  display: none;
+}
+
 .form .field-wrapper {
   display: grid;
-  grid-auto-flow: row;
+  align-items: center;
+  padding: 8px;
+}
+
+.form .field-wrapper.one-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   padding: 8px;
 }
 
 .form fieldset {
   display: grid;
-  grid-auto-flow: row;
   gap: 8px;
   border: none;
   padding: 0;
-}
-
-@media (width >= 900px) {
-  .form fieldset {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
 }
 
 .form fieldset > legend {
@@ -31,12 +34,30 @@
   margin-bottom: 0.25em;
 }
 
+@media screen and (width >= 900px) {
+  .form fieldset {
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    gap: 16px;
+  }
+}
+
+@media screen and (700px <= width < 900px) {
+  .form .fieldset-wrapper .field-wrapper:not(.checkbox-wrapper):not(.two-rows) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (width >= 700px) {
+  form > .field-wrapper:not(.fieldset-wrapper):not(.checkbox-wrapper):not(.two-rows) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .form input,
 .form select,
 .form textarea {
   font-size: var(--body-font-size-s);
   width: 100%;
-  max-width: 50rem;
   display: block;
   padding: 12px 8px;
   border-radius: 4px;

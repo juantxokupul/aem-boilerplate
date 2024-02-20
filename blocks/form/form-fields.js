@@ -3,6 +3,9 @@ import { toClassName } from '../../scripts/aem.js';
 function createFieldWrapper(fd) {
   const fieldWrapper = document.createElement('div');
   if (fd.Style) fieldWrapper.className = fd.Style;
+  if (fd.Hidden && (fd.Hidden.toLowerCase() === 'true' || fd.Hidden.toLowerCase() === 'x')) fieldWrapper.className += ' hidden';
+  if (fd.OneRow && fd.OneRow.toLowerCase() === 'true') fieldWrapper.className += ' one-row';
+  if (fd.OneRow && fd.OneRow.toLowerCase() === 'false') fieldWrapper.className += ' two-rows';
   fieldWrapper.classList.add('field-wrapper', `${fd.Type}-wrapper`);
 
   fieldWrapper.dataset.fieldset = fd.Fieldset;
@@ -33,6 +36,12 @@ function setCommonAttributes(field, fd) {
   field.required = fd.Mandatory && (fd.Mandatory.toLowerCase() === 'true' || fd.Mandatory.toLowerCase() === 'x');
   field.placeholder = fd.Placeholder;
   field.value = fd.Value;
+
+  if (fd.MinLength) field.minLength = fd.MinLength;
+  if (fd.MaxLength) field.maxLength = fd.MaxLength;
+  if (fd.Min) field.min = fd.Min;
+  if (fd.Max) field.max = fd.Max;
+  if (fd.Pattern) field.pattern = fd.Pattern;
 }
 
 const createHeading = (fd) => {
@@ -109,7 +118,7 @@ const createSelect = async (fd) => {
 };
 
 const createConfirmation = (fd, form) => {
-  form.dataset.confirmation = new URL(fd.Value).pathname;
+  form.dataset.confirmation = new URL(fd.Value, window.location).pathname;
 
   return {};
 };
@@ -140,7 +149,7 @@ const createTextArea = (fd) => {
 
 const createInput = (fd) => {
   const field = document.createElement('input');
-  field.type = fd.Type;
+  field.type = fd.Format || fd.Type;
   setCommonAttributes(field, fd);
 
   const fieldWrapper = createFieldWrapper(fd);
