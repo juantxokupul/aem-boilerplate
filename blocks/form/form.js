@@ -1,7 +1,7 @@
 import createField from './form-fields.js';
 import { sampleRUM } from '../../scripts/aem.js';
 
-async function createForm(formHref) {
+async function createForm(formHref, formConfig) {
   const { pathname } = new URL(formHref);
   const resp = await fetch(pathname);
   const json = await resp.json();
@@ -10,10 +10,45 @@ async function createForm(formHref) {
   // eslint-disable-next-line prefer-destructuring
   form.dataset.action = pathname.split('.json')[0];
 
-  const fields = await Promise.all(json.data.map((fd) => createField(fd, form)));
-  fields.forEach((field) => {
-    if (field) {
+  formConfig.fields = await Promise.all(json.data.map((fd) => createField(fd, form)));
+
+  form.addEventListener('webkitAnimationEnd', function(a) {
+    if (a.animationName === 'fadeIn') {
+      return;
+    } 
+    a.target.style.animationName = 'fadeIn';
+
+    form.replaceChildren();
+    generateFormfields(form, formConfig);
+
+    form.setAttribute('data-submitting', 'false');
+    form.querySelector('button[type="submit"]').disabled = false;
+  });
+
+  generateFormfields(form, formConfig);
+
+  return form;
+}
+
+function generateFormfields(form, formConfig) {
+
+  formConfig.fields.forEach((field) => {
+    const step = +field?.dataset.step;
+    if (!step) {
+      return;
+    }
+
+    if (step === formConfig.currentStep || step === -1) {
+      if (field.dataset.submitLabel) {
+        const button = field.querySelector('button');
+        button.textContent = formConfig.currentStep < formConfig.maxSteps ? field.dataset.submitStepLabel : field.dataset.submitLabel;
+      }
+
       form.append(field);
+    } else {
+      if (step > formConfig.maxSteps) {
+        formConfig.maxSteps = step;
+      }
     }
   });
 
@@ -25,11 +60,11 @@ async function createForm(formHref) {
     });
   });
 
-  return form;
+  formConfig.block.replaceChildren(form);
 }
 
-function generatePayload(form) {
-  const payload = {};
+function generatePayload(form, formConfig) {
+  const payload = formConfig.payload;
 
   [...form.elements].forEach((field) => {
     if (field.name && field.type !== 'submit' && !field.disabled) {
@@ -42,7 +77,6 @@ function generatePayload(form) {
       }
     }
   });
-  return payload;
 }
 
 function handleSubmitError(form, error) {
@@ -52,7 +86,7 @@ function handleSubmitError(form, error) {
   sampleRUM('form:error', { source: '.form', target: error.stack || error.message || 'unknown error' });
 }
 
-async function handleSubmit(form) {
+async function handleSubmit(form, formConfig) {
   if (form.getAttribute('data-submitting') === 'true') return;
 
   const submit = form.querySelector('button[type="submit"]');
@@ -61,10 +95,23 @@ async function handleSubmit(form) {
     submit.disabled = true;
 
     // create payload
-    const payload = generatePayload(form);
+    generatePayload(form, formConfig);
+
+    // generate next step
+    if (formConfig.currentStep < formConfig.maxSteps) {
+      formConfig.currentStep++;
+  
+      setTimeout(() => {
+        form.style.animationName = 'fadeOut';
+        form.style.animationDuration = '600ms';
+      }, 200);
+
+      return;
+    } 
+
     const response = await fetch(form.dataset.action, {
       method: 'POST',
-      body: JSON.stringify({ data: payload }),
+      body: JSON.stringify({ data: formConfig.payload }),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -89,14 +136,21 @@ export default async function decorate(block) {
   const formLink = block.querySelector('a[href$=".json"]');
   if (!formLink) return;
 
-  const form = await createForm(formLink.href);
-  block.replaceChildren(form);
+  const formConfig = {
+    fields: undefined,
+    payload: {},
+    currentStep: 1,
+    maxSteps: 1,
+    block: block,
+  }
+
+  const form = await createForm(formLink.href, formConfig);
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const valid = form.checkValidity();
     if (valid) {
-      handleSubmit(form);
+      handleSubmit(form, formConfig);
     } else {
       const firstInvalidEl = form.querySelector(':invalid:not(fieldset)');
       if (firstInvalidEl) {

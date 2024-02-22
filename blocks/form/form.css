@@ -1,3 +1,31 @@
+@-moz-keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+@-moz-keyframes fadeOut {
+  from {opacity:1;}
+  to {opacity:0;}
+}
+
+@-webkit-keyframes fadeOut {
+  from {opacity:1;}
+  to {opacity:0;}
+}
+@keyframes fadeOut {
+  from {opacity:1;}
+  to {opacity:0;}
+}
+
 .form .field-wrapper.hidden,
 .form fieldset.hidden {
   display: none;
@@ -26,6 +54,7 @@
 .form fieldset > legend {
   font-weight: 700;
   font-size: var(--heading-font-size-xs);
+  display: block;
 }
 
 .form label {
@@ -35,20 +64,20 @@
 }
 
 @media screen and (width >= 900px) {
-  .form fieldset {
+  .form .fieldset-wrapper:not(.two-rows) fieldset {
     grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 16px;
   }
 }
 
 @media screen and (700px <= width < 900px) {
-  .form .fieldset-wrapper .field-wrapper:not(.checkbox-wrapper):not(.two-rows) {
+  .form .fieldset-wrapper:not(.two-rows) .field-wrapper:not(.fieldset-wrapper, .checkbox-wrapper, .heading-wrapper, .plaintext-wrapper, .toggle-wrapper):not(.two-rows) {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media screen and (width >= 700px) {
-  form > .field-wrapper:not(.fieldset-wrapper):not(.checkbox-wrapper):not(.two-rows) {
+  form > .field-wrapper:not(.fieldset-wrapper, .checkbox-wrapper, .heading-wrapper, .plaintext-wrapper, .toggle-wrapper):not(.two-rows) {
     grid-template-columns: 1fr 1fr;
   }
 }

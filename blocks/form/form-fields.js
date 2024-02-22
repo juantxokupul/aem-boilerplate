@@ -9,6 +9,7 @@ function createFieldWrapper(fd) {
   fieldWrapper.classList.add('field-wrapper', `${fd.Type}-wrapper`);
 
   fieldWrapper.dataset.fieldset = fd.Fieldset;
+  fieldWrapper.dataset.step = fd.Step || 1;
 
   return fieldWrapper;
 }
@@ -125,12 +126,15 @@ const createConfirmation = (fd, form) => {
 
 const createSubmit = (fd) => {
   const button = document.createElement('button');
-  button.textContent = fd.Label || fd.Name;
   button.classList.add('button');
   button.type = 'submit';
+  fd.Step = -1;
 
   const fieldWrapper = createFieldWrapper(fd);
   fieldWrapper.append(button);
+  fieldWrapper.dataset.submitLabel = fd.Label || fd.Name;
+  fieldWrapper.dataset.submitStepLabel = fd.StepLabel;
+
   return { field: button, fieldWrapper };
 };
 
@@ -149,7 +153,10 @@ const createTextArea = (fd) => {
 
 const createInput = (fd) => {
   const field = document.createElement('input');
+
   field.type = fd.Format || fd.Type;
+  if (fd.PatternErrorMessage) field.title = fd.PatternErrorMessage;
+
   setCommonAttributes(field, fd);
 
   const fieldWrapper = createFieldWrapper(fd);
